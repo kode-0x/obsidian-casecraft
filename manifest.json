@@ -1,0 +1,9 @@
+{
+	"id": "casecraft",
+	"name": "Casecraft",
+	"version": "0.1.0",
+	"minAppVersion": "1.0.0",
+	"description": "Convert pasted text to Capitalized Case while preserving LaTeX and user-defined words.",
+	"author": "Casecraft",
+	"isDesktopOnly": false
+}
