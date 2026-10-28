@@ -1,4 +1,4 @@
-import { Editor, Plugin } from "obsidian";
+import { Editor, MarkdownFileInfo, MarkdownView, Plugin } from "obsidian";
 import {
 	CasecraftSettings,
 	CasecraftSettingTab,
@@ -7,66 +7,78 @@ import {
 import { toCapitalizedCase } from "./transform";
 
 export default class CasecraftPlugin extends Plugin {
-	settings: CasecraftSettings = DEFAULT_SETTINGS;
+	settings!: CasecraftSettings;
 
-	async onload(): Promise<void> {
+	async onload() {
 		await this.loadSettings();
 
+		// Transform clipboard text as it is pasted into the editor.
 		this.registerEvent(
-			this.app.workspace.on("editor-paste", (evt: ClipboardEvent, editor: Editor) => {
-				if (!this.settings.enabled) {
-					return;
-				}
+			this.app.workspace.on(
+				"editor-paste",
+				(evt: ClipboardEvent, editor: Editor) => {
+					if (!this.settings.enabled) {
+						return;
+					}
 
-				if (evt.defaultPrevented) {
-					return;
-				}
+					if (evt.defaultPrevented) {
+						return;
+					}
 
-				const clipboard = evt.clipboardData;
-				if (!clipboard) {
-					return;
-				}
+					const clipboard = evt.clipboardData;
+					if (!clipboard) {
+						return;
+					}
 
-				const text = clipboard.getData("text/plain");
-				if (!text) {
-					return;
-				}
+					const text = clipboard.getData("text/plain");
+					if (!text) {
+						return;
+					}
 
-				evt.preventDefault();
+					evt.preventDefault();
 
-				const transformed = toCapitalizedCase(text, {
-					excludedWords: this.settings.excludedWords,
-				});
-
-				editor.replaceSelection(transformed);
-			})
+					editor.replaceSelection(this.transform(text));
+				},
+			),
 		);
 
+		// Editor command to transform the current selection on demand.
 		this.addCommand({
 			id: "capitalize-selection",
 			name: "Capitalize selected text",
-			editorCallback: (editor: Editor) => {
+			editorCallback: (
+				editor: Editor,
+				_ctx: MarkdownView | MarkdownFileInfo,
+			) => {
 				const selection = editor.getSelection();
 				if (!selection) {
 					return;
 				}
 
-				const transformed = toCapitalizedCase(selection, {
-					excludedWords: this.settings.excludedWords,
-				});
-
-				editor.replaceSelection(transformed);
+				editor.replaceSelection(this.transform(selection));
 			},
 		});
 
 		this.addSettingTab(new CasecraftSettingTab(this.app, this));
 	}
 
-	async loadSettings(): Promise<void> {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+	onunload() { }
+
+	private transform(text: string): string {
+		return toCapitalizedCase(text, {
+			excludedWords: this.settings.excludedWords,
+		});
 	}
 
-	async saveSettings(): Promise<void> {
+	async loadSettings() {
+		this.settings = Object.assign(
+			{},
+			DEFAULT_SETTINGS,
+			(await this.loadData()) as Partial<CasecraftSettings>,
+		);
+	}
+
+	async saveSettings() {
 		await this.saveData(this.settings);
 	}
 }

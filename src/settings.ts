@@ -1,5 +1,5 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import type CasecraftPlugin from "./main";
+import CasecraftPlugin from "./main";
 
 export interface CasecraftSettings {
 	enabled: boolean;
@@ -19,7 +19,7 @@ export function parseExcludedWords(raw: string): string[] {
 }
 
 export class CasecraftSettingTab extends PluginSettingTab {
-	private plugin: CasecraftPlugin;
+	plugin: CasecraftPlugin;
 
 	constructor(app: App, plugin: CasecraftPlugin) {
 		super(app, plugin);
@@ -28,16 +28,19 @@ export class CasecraftSettingTab extends PluginSettingTab {
 
 	display(): void {
 		const { containerEl } = this;
+
 		containerEl.empty();
 
 		new Setting(containerEl)
 			.setName("Transform on paste")
-			.setDesc("Convert pasted text to Capitalized Case automatically.")
+			.setDesc("Automatically convert pasted text to capitalized case.")
 			.addToggle((toggle) =>
-				toggle.setValue(this.plugin.settings.enabled).onChange(async (value) => {
-					this.plugin.settings.enabled = value;
-					await this.plugin.saveSettings();
-				})
+				toggle
+					.setValue(this.plugin.settings.enabled)
+					.onChange(async (value) => {
+						this.plugin.settings.enabled = value;
+						await this.plugin.saveSettings();
+					}),
 			);
 
 		new Setting(containerEl)
@@ -48,11 +51,12 @@ export class CasecraftSettingTab extends PluginSettingTab {
 					.setPlaceholder("API\nAI\niPhone")
 					.setValue(this.plugin.settings.excludedWords.join("\n"))
 					.onChange(async (value) => {
-						this.plugin.settings.excludedWords = parseExcludedWords(value);
+						this.plugin.settings.excludedWords =
+							parseExcludedWords(value);
 						await this.plugin.saveSettings();
 					});
 				text.inputEl.rows = 8;
-				text.inputEl.classList.add("casecraft-excluded-words");
+				text.inputEl.addClass("casecraft-excluded-words");
 			});
 	}
 }
