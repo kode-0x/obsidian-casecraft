@@ -1,0 +1,33 @@
+{
+	"name": "casecraft",
+	"version": "0.1.0",
+	"description": "Convert pasted text to Capitalized Case while preserving LaTeX and user-defined words.",
+	"main": "main.js",
+	"type": "module",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"typecheck": "tsc -noEmit -skipLibCheck",
+		"version": "node version-bump.mjs && git add manifest.json versions.json"
+	},
+	"keywords": [
+		"obsidian",
+		"obsidian-plugin",
+		"capitalize",
+		"paste",
+		"latex"
+	],
+	"license": "MIT",
+	"devDependencies": {
+		"@types/node": "^22.15.17",
+		"esbuild": "0.25.5",
+		"obsidian": "latest",
+		"typescript": "^5.8.3"
+	},
+	"engines": {
+		"node": ">=18"
+	},
+	"allowScripts": {
+		"esbuild@0.25.5": true
+	}
+}
