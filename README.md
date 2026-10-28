@@ -127,6 +127,12 @@ Type-check without emitting output:
 npm run typecheck
 ```
 
+Lint with the official Obsidian ruleset (`eslint-plugin-obsidianmd`):
+
+```bash
+npm run lint
+```
+
 ## Build
 
 Produce a minified production bundle. This runs the type-checker first, then esbuild:
@@ -172,6 +178,7 @@ casecraft/
 │   ├── settings.ts    Settings model and settings tab
 │   └── transform.ts   Capitalized Case and LaTeX-aware logic
 ├── esbuild.config.mjs Bundler configuration
+├── eslint.config.mts  ESLint flat config (eslint-plugin-obsidianmd)
 ├── manifest.json      Obsidian plugin manifest
 ├── versions.json      Version to minAppVersion map
 ├── tsconfig.json      TypeScript configuration
